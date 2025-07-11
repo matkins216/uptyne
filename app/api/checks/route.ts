@@ -57,14 +57,33 @@ export async function GET(request: Request) {
     }
 
     // Transform the data to match the expected format
-    const transformedChecks = checks?.map(check => ({
-      id: check.id,
-      monitor_name: monitorNames[check.monitor_id] || 'Unknown Monitor',
-      status_code: check.status_code || (check.status === 'success' ? 200 : 500),
-      response_time: check.response_time,
-      checked_at: check.checked_at,
-      error: check.error_message
-    })) || [];
+    const transformedChecks = checks?.map(check => {
+      // Map status to appropriate status code for dashboard display
+      let statusCode: number;
+      switch (check.status) {
+        case 'up':
+          statusCode = 200;
+          break;
+        case 'down':
+          statusCode = 500;
+          break;
+        case 'error':
+          statusCode = 0; // Network/connection error
+          break;
+        default:
+          statusCode = check.status_code || 500;
+      }
+
+      return {
+        id: check.id,
+        monitor_name: monitorNames[check.monitor_id] || 'Unknown Monitor',
+        status_code: statusCode,
+        response_time: check.response_time || 0,
+        checked_at: check.checked_at,
+        error: check.error_message,
+        status: check.status // Keep original status for reference
+      };
+    }) || [];
 
     return NextResponse.json(transformedChecks);
   } catch (error) {

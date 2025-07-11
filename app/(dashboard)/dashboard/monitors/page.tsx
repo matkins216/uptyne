@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { MonitorList } from '@/components/monitors/monitor-list';
 
 interface Monitor {
   id: string;
@@ -17,6 +18,13 @@ interface Monitor {
   last_check_at?: string;
   created_at: string;
   uptime_percentage?: number;
+  last_check?: {
+    status: 'up' | 'down' | 'error';
+    response_time: number;
+    status_code?: number;
+    error_message?: string;
+    checked_at: string;
+  };
 }
 
 export default function MonitorsPage() {
@@ -46,12 +54,21 @@ export default function MonitorsPage() {
     }
   };
 
-  const getStatusColor = (isActive: boolean) => {
-    return isActive ? 'default' : 'secondary';
-  };
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch(`/api/monitors/${id}`, {
+        method: 'DELETE',
+      });
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
+      if (!response.ok) {
+        throw new Error('Failed to delete monitor');
+      }
+
+      // Refresh the monitors list
+      fetchMonitors();
+    } catch (err) {
+      console.error('Error deleting monitor:', err);
+    }
   };
 
   if (loading) {
@@ -92,61 +109,7 @@ export default function MonitorsPage() {
         </Link>
       </div>
 
-      {monitors.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-gray-600 text-center mb-4">
-              No monitors added yet. Click "Add Monitor" to create one!
-            </p>
-            <Link href="/dashboard/monitors/new">
-              <Button>
-                Create Your First Monitor
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {monitors.map((monitor) => (
-            <Link key={monitor.id} href={`/dashboard/monitors/${monitor.id}`}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <CardTitle className="text-lg">{monitor.name}</CardTitle>
-                      <CardDescription className="text-sm truncate">
-                        {monitor.url}
-                      </CardDescription>
-                    </div>
-                    <Badge variant={getStatusColor(monitor.is_active)}>
-                      {monitor.is_active ? 'Active' : 'Paused'}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Check Interval</span>
-                    <span className="font-medium">{monitor.check_interval} min</span>
-                  </div>
-                  
-                  {monitor.uptime_percentage !== undefined && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Uptime</span>
-                      <span className="font-medium">{monitor.uptime_percentage.toFixed(2)}%</span>
-                    </div>
-                  )}
-                  
-                  {monitor.last_check_at && (
-                    <div className="text-xs text-gray-500">
-                      Last checked: {formatDate(monitor.last_check_at)}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
+      <MonitorList monitors={monitors} onDelete={handleDelete} />
     </div>
   );
 }

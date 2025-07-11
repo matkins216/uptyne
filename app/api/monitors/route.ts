@@ -3,6 +3,12 @@
 import { createRouteHandlerClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
+function calculateUptime(checks: any[]) {
+  if (!checks || checks.length === 0) return 100;
+  const upChecks = checks.filter(check => check.status === 'up').length;
+  return Math.round((upChecks / checks.length) * 100);
+}
+
 export async function GET() {
   try {
     const supabase = await createRouteHandlerClient();
@@ -12,9 +18,20 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get monitors with their check results
     const { data: monitors, error } = await supabase
       .from('monitors')
-      .select('*')
+      .select(`
+        *,
+        monitor_checks(
+          id,
+          status,
+          response_time,
+          status_code,
+          error_message,
+          checked_at
+        )
+      `)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
@@ -23,7 +40,38 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch monitors' }, { status: 500 });
     }
 
-    return NextResponse.json(monitors || []);
+    // Process the data to include latest check and uptime for each monitor
+    const processedMonitors = monitors?.map(monitor => {
+      const checks = monitor.monitor_checks || [];
+      const latestCheck = checks.length > 0 
+        ? checks.reduce((latest: any, check: any) => 
+            new Date(check.checked_at) > new Date(latest.checked_at) ? check : latest
+          )
+        : null;
+
+      // Calculate uptime percentage
+      const uptimePercentage = calculateUptime(checks);
+
+      return {
+        id: monitor.id,
+        name: monitor.name,
+        url: monitor.url,
+        check_interval: monitor.check_interval,
+        is_active: monitor.is_active,
+        created_at: monitor.created_at,
+        updated_at: monitor.updated_at,
+        uptime_percentage: uptimePercentage,
+        last_check: latestCheck ? {
+          status: latestCheck.status,
+          response_time: latestCheck.response_time,
+          status_code: latestCheck.status_code,
+          error_message: latestCheck.error_message,
+          checked_at: latestCheck.checked_at
+        } : null
+      };
+    }) || [];
+
+    return NextResponse.json(processedMonitors);
   } catch (error) {
     console.error('Unexpected error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

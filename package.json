@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check-monitors": "node scripts/check-monitors.js",
+    "check-monitors-direct": "node scripts/check-monitors-direct.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
+    "@radix-ui/react-switch": "^1.2.5",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.4",
     "@tanstack/react-query": "^5.82.0",

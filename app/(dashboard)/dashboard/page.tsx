@@ -63,7 +63,7 @@ export default function DashboardPage() {
         activeMonitors: activeCount,
         pausedMonitors: pausedCount,
         totalChecks: checks.length,
-        failedChecks: checks.filter((c: any) => c.status_code >= 400).length,
+        failedChecks: checks.filter((c: any) => c.status_code < 200 || c.status_code >= 300).length,
         averageUptime: monitors.reduce((acc: number, m: any) => acc + (m.uptime_percentage || 0), 0) / (monitors.length || 1)
       });
       
@@ -78,8 +78,10 @@ export default function DashboardPage() {
   const getStatusBadge = (statusCode: number) => {
     if (statusCode >= 200 && statusCode < 300) {
       return <Badge className="bg-green-100 text-green-800">Success</Badge>;
-    } else if (statusCode >= 400) {
+    } else if (statusCode >= 400 && statusCode < 600) {
       return <Badge variant="destructive">Failed</Badge>;
+    } else if (statusCode === 0) {
+      return <Badge variant="destructive">Network Error</Badge>;
     }
     return <Badge variant="secondary">Unknown</Badge>;
   };
@@ -177,8 +179,10 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-sm font-medium">{check.response_time}ms</p>
-                      <p className="text-xs text-gray-600">Response time</p>
+                      <p className="text-sm font-medium">
+                        {new Date(check.checked_at).toLocaleTimeString()}
+                      </p>
+                      <p className="text-xs text-gray-600">Last checked</p>
                     </div>
                     {getStatusBadge(check.status_code)}
                   </div>

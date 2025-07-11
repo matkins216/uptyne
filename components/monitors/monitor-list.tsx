@@ -61,7 +61,7 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
                     <Activity className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href={`/monitors/${monitor.id}/edit`}>
+                <Link href={`/dashboard/monitors/${monitor.id}/edit`}>
                   <Button variant="ghost" size="icon">
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -79,21 +79,15 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">URL</p>
                 <p className="font-medium truncate">{monitor.url}</p>
               </div>
               <div>
                 <p className="text-gray-500">Uptime</p>
-                <p className="font-medium">{monitor.uptime_percentage || 100}%</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Response Time</p>
                 <p className="font-medium">
-                  {monitor.last_check 
-                    ? formatResponseTime(monitor.last_check.response_time)
-                    : 'N/A'}
+                  {monitor.uptime_percentage !== undefined ? `${monitor.uptime_percentage}%` : 'No data'}
                 </p>
               </div>
               <div>

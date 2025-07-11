@@ -18,7 +18,28 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Status Checks
+
+To test the status check functionality:
+
+1. Create a monitor in the dashboard
+2. Run one of the status check scripts:
+
+   **Option 1: Using the API endpoint (requires dev server running)**
+   ```bash
+   npm run dev  # Start the development server first
+   npm run check-monitors
+   ```
+
+   **Option 2: Direct database access (no dev server needed)**
+   ```bash
+   npm run check-monitors-direct
+   ```
+   *Note: This requires your Supabase environment variables to be set*
+
+3. Refresh the monitors page to see the check results
+
+The system will perform HTTP requests to your monitored URLs and display the status (up/down/error) with timestamps.
 
 ## Learn More
 

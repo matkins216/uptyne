@@ -91,9 +91,14 @@ export default function MonitorDetailsPage({ params }: { params: Promise<{ id: s
           <h1 className="text-2xl font-bold">{monitor.name}</h1>
           <p className="text-gray-600 mt-1">Monitor Details</p>
         </div>
-        <Link href="/dashboard/monitors">
-          <Button variant="outline">Back to Monitors</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href={`/dashboard/monitors/${id}/edit`}>
+            <Button>Edit Monitor</Button>
+          </Link>
+          <Link href="/dashboard/monitors">
+            <Button variant="outline">Back to Monitors</Button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
