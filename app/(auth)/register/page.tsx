@@ -14,20 +14,45 @@ export default function RegisterPage() {
   const supabase = createClient();
 
   const handleRegister = async () => {
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (!error) router.push("/login");
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    console.log('Register result:', { data, error });
+    if (!error) {
+      console.log('Registration successful, redirecting to login');
+      router.push("/login");
+    } else {
+      console.log('Registration error:', error);
+    }
+  };
+
+  const handleGoogleRegister = async () => {
+    console.log('handleGoogleRegister clicked');
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
+    
+    if (error) {
+      console.error('Google OAuth error:', error);
+    } else {
+      console.log('Google OAuth initiated successfully');
+    }
   };
 
   return (
-    <div>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <h1>Register</h1>
-      <form onSubmit={(e) => e.preventDefault()}>
+      <form onSubmit={(e) => e.preventDefault()} style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center", width: 300 }}>
         <Label>Email</Label>
         <Input value={email} onChange={(e) => setEmail(e.target.value)} />
         <Label>Password</Label>
         <Input value={password} onChange={(e) => setPassword(e.target.value)} type="password" />
         <Button onClick={handleRegister}>Register</Button>
       </form>
+      <Button onClick={handleGoogleRegister} type="button" style={{ marginTop: 16, width: 300 }}>
+        Register with Google
+      </Button>
     </div>
   );
 }

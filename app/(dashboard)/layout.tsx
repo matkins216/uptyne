@@ -4,9 +4,14 @@ import { redirect } from 'next/navigation';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  
+  console.log('Dashboard layout - User:', user, 'Error:', error);
 
-  if (!user) redirect('/login');
+  if (!user) {
+    console.log('No user found, redirecting to login');
+    redirect('/login');
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">

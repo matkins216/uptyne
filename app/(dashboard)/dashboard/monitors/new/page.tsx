@@ -1,4 +1,3 @@
-
 // app/(dashboard)/dashboard/monitors/new/page.tsx
 'use client';
 
@@ -61,6 +60,7 @@ export default function NewMonitorPage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
+        console.error('Error creating monitor:', errorData);
         throw new Error(errorData?.error || 'Failed to create monitor');
       }
 

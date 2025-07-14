@@ -1,4 +1,3 @@
-
 // app/api/monitors/route.ts
 import { createRouteHandlerClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -9,10 +8,11 @@ function calculateUptime(checks: any[]) {
   return Math.round((upChecks / checks.length) * 100);
 }
 
-export async function GET() {
+export async function GET(request: Request, response: Response) {
+  const supabase = createRouteHandlerClient();
   try {
-    const supabase = await createRouteHandlerClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
+    console.log('User in GET /api/monitors:', user, 'Auth error:', authError);
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -82,6 +82,7 @@ export async function POST(request: Request) {
   try {
     const supabase = await createRouteHandlerClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
+    console.log('User in POST /api/monitors:', user, 'Auth error:', authError);
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -115,6 +116,14 @@ export async function POST(request: Request) {
       );
     }
 
+    console.log('Inserting monitor:', {
+      user_id: user.id,
+      name: name.trim(),
+      url: url.trim(),
+      check_interval: intervalNum,
+      is_active: status === 'active',
+    });
+
     const { data: monitor, error } = await supabase
       .from('monitors')
       .insert({
@@ -128,8 +137,8 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      console.error('Error creating monitor:', error);
-      return NextResponse.json({ error: 'Failed to create monitor' }, { status: 500 });
+      console.error('Error creating monitor:', error, 'Details:', error?.details, 'Message:', error?.message);
+      return NextResponse.json({ error: 'Failed to create monitor', details: error }, { status: 500 });
     }
 
     return NextResponse.json(monitor, { status: 201 });
