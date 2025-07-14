@@ -43,5 +43,23 @@ export function createRouteHandlerClient() {
   )
 }
 
+export function createServiceClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_KEY!, // Use the service role key for admin jobs
+    {
+      cookies: {
+        get() { return undefined },
+        set() {},
+        remove() {},
+      },
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      }
+    }
+  );
+}
+
 
 

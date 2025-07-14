@@ -8,7 +8,7 @@ function calculateUptime(checks: any[]) {
   return Math.round((upChecks / checks.length) * 100);
 }
 
-export async function GET(request: Request, response: Response) {
+export async function GET(request: Request) {
   const supabase = createRouteHandlerClient();
   try {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
