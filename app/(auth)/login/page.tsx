@@ -1,7 +1,7 @@
 // File: app/(auth)/login/page.tsx
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -15,12 +15,15 @@ export default function LoginPage() {
 
 
   const handleGoogleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`
       }
     });
+    if (data?.url) {
+      window.location.href = data.url; // Redirect to the OAuth provider
+    }
   };
 
   return (
