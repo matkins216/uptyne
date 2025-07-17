@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
+import { loginWithPassword } from "@/app/(auth)/login/action"; // adjust path if needed
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,15 +15,19 @@ export default function LoginPage() {
   const supabase = createClient();
 
   const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (!error) router.push("/dashboard");
+    const result = await loginWithPassword(email, password);
+    if (result.success) {
+      router.push("/dashboard");
+    } else {
+      // handle error, e.g. show a message
+    }
   };
 
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
       }
     });
   };
@@ -30,12 +35,12 @@ export default function LoginPage() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <h1>Login</h1>
-      <form onSubmit={(e) => e.preventDefault()} style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center", width: 300 }}>
+      <form action={loginWithPassword}>
         <Label>Email</Label>
-        <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input name="email" />
         <Label>Password</Label>
-        <Input value={password} onChange={(e) => setPassword(e.target.value)} type="password" />
-        <Button onClick={handleLogin}>Login</Button>
+        <Input name="password" type="password" />
+        <Button type="submit">Login</Button>
       </form>
       <Button onClick={handleGoogleLogin} type="button" style={{ marginTop: 16, width: 300 }}>
         Login with Google
