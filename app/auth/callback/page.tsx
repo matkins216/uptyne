@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+
 export default function AuthCallbackPage() {
   const router = useRouter();
 
@@ -19,6 +20,7 @@ export default function AuthCallbackPage() {
         await new Promise(res => setTimeout(res, 200));
       }
       // If no session after polling, redirect to login
+      console.log('did not find user mfer')
       router.replace("/login");
     };
     checkSession();
