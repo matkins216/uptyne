@@ -9,19 +9,10 @@ import { createClient } from "@/lib/supabase/client";
 import { loginWithPassword } from "@/app/(auth)/login/action"; // adjust path if needed
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  
   const router = useRouter();
   const supabase = createClient();
 
-  const handleLogin = async () => {
-    const result = await loginWithPassword(email, password);
-    if (result.success) {
-      router.push("/dashboard");
-    } else {
-      // handle error, e.g. show a message
-    }
-  };
 
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
