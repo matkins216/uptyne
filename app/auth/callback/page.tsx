@@ -9,7 +9,7 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const supabase = createClient();
+      const supabase = await createClient();
       // Poll for the session
       for (let i = 0; i < 10; i++) {
         const { data: { user } } = await supabase.auth.getUser();
