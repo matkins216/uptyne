@@ -9,7 +9,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   console.log('Dashboard layout - User:', user, 'Error:', error);
 
   if (!user) {
-    console.log('No user found, redirecting to login');
+    console.log(error);
     redirect('/login');
   }
 
