@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { UptimeChart } from '@/components/monitors/uptime-chart';
 
 interface Monitor {
   id: string;
@@ -147,6 +148,15 @@ export default function MonitorDetailsPage({ params }: { params: Promise<{ id: s
               <label className="text-sm font-medium text-gray-600">Last Updated</label>
               <p className="text-lg">{new Date(monitor.updated_at).toLocaleString()}</p>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Uptime Chart</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UptimeChart checks={[]} />
           </CardContent>
         </Card>
       </div>
