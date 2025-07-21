@@ -56,7 +56,7 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <Link href={`/monitors/${monitor.id}`}>
+                <Link href={`/dashboard/monitors/${monitor.id}`}>
                   <Button variant="ghost" size="icon">
                     <Activity className="h-4 w-4" />
                   </Button>
@@ -82,7 +82,7 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">URL</p>
-                <p className="font-medium truncate">{`/dashboard/${monitor.url}`}</p>
+                <p className="font-medium truncate">{monitor.url}</p>
               </div>
               <div>
                 <p className="text-gray-500">Uptime</p>
