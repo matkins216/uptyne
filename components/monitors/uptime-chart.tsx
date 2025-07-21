@@ -22,11 +22,13 @@ export function UptimeChart({ monitorId }: UptimeChartProps) {
   useEffect(() => {
     const fetchChecks = async () => {
       try {
-        const response = await fetch(`/api/${monitorId}/checks`);
+        setLoading(true);
+        const response = await fetch(`/api/monitors/${monitorId}/checks`);
         if (response.ok) {
           const data = await response.json();
-          console.log(data)
           setChecks(data);
+        } else {
+          console.error('Failed to fetch check data:', response.statusText);
         }
       } catch (error) {
         console.error('Failed to fetch check data:', error);
@@ -37,9 +39,13 @@ export function UptimeChart({ monitorId }: UptimeChartProps) {
 
     if (monitorId) {
       fetchChecks();
+    } else {
+      setChecks([]);
+      setLoading(false);
     }
   }, [monitorId]);
 
+  // Process the check data for the chart
   const data = useMemo(() => {
     return checks
       .slice(-50)
@@ -49,6 +55,10 @@ export function UptimeChart({ monitorId }: UptimeChartProps) {
         status: check.status
       }))
   }, [checks])
+
+  console.log(checks)
+
+
 
   if (loading) {
     return <div className="flex justify-center items-center h-[300px]">Loading chart data...</div>;
@@ -67,7 +77,7 @@ export function UptimeChart({ monitorId }: UptimeChartProps) {
         <Tooltip />
         <Line 
           type="monotone" 
-          dataKey="responseTime" 
+          dataKey="responseTime"
           stroke="#3b82f6" 
           strokeWidth={3}
           dot={{ fill: '#3b82f6', r: 4 }}
