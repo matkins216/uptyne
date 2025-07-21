@@ -82,7 +82,7 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">URL</p>
-                <p className="font-medium truncate">{monitor.url}</p>
+                <p className="font-medium truncate">{`/dashboard/${monitor.url}`}</p>
               </div>
               <div>
                 <p className="text-gray-500">Uptime</p>
