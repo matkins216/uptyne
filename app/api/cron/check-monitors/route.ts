@@ -10,6 +10,10 @@ export const GET = async () => {
         await supabase.from("monitor_checks").insert({
             monitor_id: monitor.id,
             status: check.status,
+            response_time: check.responseTime,
+            status_code: check.statusCode,
+            checked_at: new Date().toISOString(),
+            error_message: check.errorMessage
         });
     }
     return new Response("Cron job completed");

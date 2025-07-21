@@ -156,7 +156,7 @@ export default function MonitorDetailsPage({ params }: { params: Promise<{ id: s
             <CardTitle>Uptime Chart</CardTitle>
           </CardHeader>
           <CardContent>
-            <UptimeChart checks={[]} />
+            <UptimeChart monitorId={id} />
           </CardContent>
         </Card>
       </div>
