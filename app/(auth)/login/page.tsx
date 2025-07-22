@@ -15,10 +15,15 @@ export default function LoginPage() {
 
 
   const handleGoogleLogin = async () => {
+    // For production, use app.uptyne.com as the redirect domain
+    const redirectDomain = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' 
+      ? 'https://app.uptyne.com' 
+      : window.location.origin;
+      
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+        redirectTo: `${redirectDomain}/auth/callback`
       }
     });
     if (data?.url) {
