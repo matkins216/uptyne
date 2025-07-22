@@ -4,8 +4,9 @@ import { checkWebsite } from "@/lib/monitor-checker";
 
 export const GET = async () => {
     const supabase = createServiceClient();
-    const { data: monitors } = await supabase.from("monitors").select("*");
+    const { data: monitors } = await supabase.from("monitors").select("*").eq("is_active", true);
     const now = new Date();
+    console.log(`[${now.toISOString()}] Checking ${monitors?.length || 0} active monitors`);
     for (const monitor of monitors || []) {
         // Fetch the last check for this monitor
         const { data: lastCheck, error: lastCheckError } = await supabase
@@ -20,9 +21,16 @@ export const GET = async () => {
         const intervalMs = intervalMinutes * 60 * 1000;
         const lastChecked = lastCheck?.checked_at ? new Date(lastCheck.checked_at) : null;
 
-        if (!lastChecked || (now.getTime() - lastChecked.getTime() >= intervalMs)) {
+        // Calculate time since last check
+        const timeSinceLastCheck = lastChecked ? now.getTime() - lastChecked.getTime() : Infinity;
+        const shouldCheck = !lastChecked || timeSinceLastCheck >= intervalMs;
+        
+        console.log(`Monitor ${monitor.id} (${monitor.name}): interval=${intervalMinutes}min, last check=${lastChecked?.toISOString() || 'never'}, time since=${timeSinceLastCheck/1000}s, should check=${shouldCheck}`);
+        
+        if (shouldCheck) {
+            console.log(`Checking ${monitor.url}...`);
             const check = await checkWebsite(monitor.url);
-            await supabase.from("monitor_checks").insert({
+            const result = await supabase.from("monitor_checks").insert({
                 monitor_id: monitor.id,
                 status: check.status,
                 response_time: check.responseTime,
@@ -30,7 +38,12 @@ export const GET = async () => {
                 checked_at: now.toISOString(),
                 error_message: check.errorMessage
             });
+            console.log(`Check complete: ${check.status}, ${check.responseTime}ms`);
         }
     }
-    return new Response("Cron job completed");
+    console.log(`[${now.toISOString()}] Cron job completed`);
+    return new Response(JSON.stringify({
+        timestamp: now.toISOString(),
+        monitorsChecked: monitors?.length || 0
+    }));
 };
