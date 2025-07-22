@@ -16,7 +16,7 @@ export const GET = async () => {
             .limit(1)
             .single();
 
-        const intervalMinutes = monitor.interval || 5; // default to 5 if not set
+        const intervalMinutes = monitor.check_interval || 5; // default to 5 if not set
         const intervalMs = intervalMinutes * 60 * 1000;
         const lastChecked = lastCheck?.checked_at ? new Date(lastCheck.checked_at) : null;
 
