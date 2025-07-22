@@ -14,13 +14,18 @@ export default function AuthCallbackPage() {
       for (let i = 0; i < 10; i++) {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          router.replace("/dashboard");
+          // In production, redirect to app.uptyne.com
+          // In development, redirect to /dashboard
+          if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production') {
+            window.location.href = 'https://app.uptyne.com/dashboard';
+          } else {
+            router.replace("/dashboard");
+          }
           return;
         }
         await new Promise(res => setTimeout(res, 200));
       }
       // If no session after polling, redirect to login
-      console.log('did not find user mfer')
       router.replace("/login");
     };
     checkSession();
