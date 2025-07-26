@@ -151,14 +151,8 @@ export default function MonitorDetailsPage({ params }: { params: Promise<{ id: s
           </CardContent>
         </Card>
 
-        <Card className='w-100%'>
-          <CardHeader>
-            <CardTitle>Uptime Chart</CardTitle>
-          </CardHeader>
-          <CardContent>
+       
             <UptimeChart monitorId={id} />
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

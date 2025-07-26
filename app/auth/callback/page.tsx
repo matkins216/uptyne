@@ -17,7 +17,7 @@ export default function AuthCallbackPage() {
           // In production, redirect to app.uptyne.com
           // In development, redirect to /dashboard
           if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production') {
-            window.location.href = 'https://app.uptyne.com/dashboard';
+            window.location.href = 'https://uptyne.com/dashboard';
           } else {
             router.replace("/dashboard");
           }

@@ -56,33 +56,47 @@ export function UptimeChart({ monitorId }: UptimeChartProps) {
       }))
   }, [checks])
 
-  console.log(checks)
-
-
-
   if (loading) {
-    return <div className="flex justify-center items-center h-[300px]">Loading chart data...</div>;
+    return <div className="flex justify-center items-center h-[200px] md:h-[300px]">Loading...</div>;
   }
 
   if (checks.length === 0) {
-    return <div className="flex justify-center items-center h-[300px]">No check data available</div>;
+    return <div className="flex justify-center items-center h-[200px] md:h-[300px]">No data</div>;
   }
 
   return (
-    <ResponsiveContainer width="100%" height={500}>
-      <LineChart data={data}>
-        <CartesianGrid strokeDasharray="4 4" />
-        <XAxis dataKey="time" />
-        <YAxis label={{ value: 'Response Time (ms)', angle: -90, position: 'insideLeft' }}  />
-        <Tooltip />
-        <Line 
-          type="monotone" 
-          dataKey="responseTime"
-          stroke="#3b82f6" 
-          strokeWidth={3}
-          dot={{ fill: '#3b82f6', r: 4 }}
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <div className="w-full overflow-x-auto">
+      <ResponsiveContainer width="100%" height={300} minWidth={300}>
+        <LineChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+          <XAxis 
+            dataKey="time" 
+            tick={{ fontSize: 12 }}
+            interval="preserveStartEnd"
+
+          />
+          <YAxis 
+            tick={{ fontSize: 12 }}
+            width={40}
+          />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: 'white', 
+              border: '1px solid #ccc', 
+              borderRadius: '4px',
+              fontSize: '12px'
+            }}
+          />
+          <Line 
+            type="monotone" 
+            dataKey="responseTime"
+            stroke="#3b82f6" 
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4, fill: '#3b82f6' }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   )
 }

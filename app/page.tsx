@@ -1,6 +1,7 @@
 import Image from "next/image";
 import logo from "@/public/logo.png";
 import Navbar from "@/components/ui/Navbar";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -14,7 +15,11 @@ export default function Home() {
           Simple, reliable, and affordable uptime monitoring for your website or application.
         </p>
         <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          <Link href="/register">
+          
           Get Started
+          </Link>
+
         </button>
       </div>
     </div>
