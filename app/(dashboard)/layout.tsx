@@ -23,7 +23,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* Desktop sidebar */}
         <aside className="hidden md:block md:w-64 bg-white shadow-md">
           <div className="p-4 text-center">
-            <h2 className="text-lg font-semibold">Uptime Monitor Dashboard</h2>
+            <h2 className="text-lg font-semibold">Dashboard</h2>
           </div>
           <nav className="mt-8">
             <ul>
