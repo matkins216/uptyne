@@ -12,7 +12,7 @@ const Navbar = () => {
           <Image src="/logo.png" alt="logo" width={100} height={100} />
           
           {/* Desktop Menu */}
-          <div className="hidden md:flex flex-row items-center justify-center gap-10">
+          <div className="hidden md:flex flex-row items-center justify-center gap-10 px-5">
               <a href="/" className="text-blue-500 hover:text-blue-700">Home</a>
               <a href="/login" className="text-blue-500 hover:text-blue-700">Login</a>
               <a href="/register" className="text-blue-500 hover:text-blue-700">Register</a>
