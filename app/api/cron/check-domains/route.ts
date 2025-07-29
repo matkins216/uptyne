@@ -15,10 +15,11 @@ export async function GET(request: NextRequest) {
     if (error) throw error;
 
     const results = [{}];
-    console.log(results)
+    console.log(monitors)
     for (const monitor of monitors || []) {
       try {
         const domainResult = await checkDomain(monitor.url);
+        console.log(domainResult)
         
         // Store domain check results
         const { error: insertError } = await supabase
@@ -53,6 +54,7 @@ export async function GET(request: NextRequest) {
       checked: results.length,
       results 
     });
+
 
   } catch (error) {
     return NextResponse.json(
