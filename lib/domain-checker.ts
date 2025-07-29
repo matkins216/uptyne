@@ -40,6 +40,7 @@ export async function checkDomain(domain: string): Promise<DomainCheckResult> {
     dns: dnsResult.status === 'fulfilled' ? dnsResult.value : { resolved: false, error: 'DNS check failed' },
     whois: whoisResult.status === 'fulfilled' ? whoisResult.value : { error: 'Whois check failed' }
   };
+
 }
 
 async function checkSSL(domain: string) {
