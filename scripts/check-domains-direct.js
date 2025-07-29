@@ -65,7 +65,7 @@ async function checkWhois(domain) {
   }
 }
 
-async function checkDomainsDirect() {
+async function checkDomain() {
   try {
     console.log('🔍 Fetching active monitors...');
     

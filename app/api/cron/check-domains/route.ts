@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
 
     if (error) throw error;
 
-    const results = [];
-    
+    const results = [{}];
+    console.log(results)
     for (const monitor of monitors || []) {
       try {
         const domainResult = await checkDomain(monitor.url);
