@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import MobileNav from '@/components/MobileNav';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -14,18 +15,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Mobile top navigation */}
-      <nav className="md:hidden bg-white shadow-md">
-        <div className="flex items-center justify-between p-4">
-          <h2 className="text-lg font-semibold">Uptime Monitor</h2>
-          <div className="flex space-x-4">
-            <Link href="/dashboard" className="px-3 py-2 hover:bg-gray-100 rounded">Home</Link>
-            <Link href="/dashboard/monitors" className="px-3 py-2 hover:bg-gray-100 rounded">Monitors</Link>
-            <Link href="/logout" className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600">Logout</Link>
-          </div>
-        </div>
-      </nav>
+      <MobileNav />
       
       <div className="flex h-full md:h-screen">
         {/* Desktop sidebar */}

@@ -100,7 +100,7 @@ export default function MonitorsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Monitors</h1>
-          <p className="text-gray-600 mt-1">Manage and track your website monitors</p>
+          {/* <p className="text-gray-600 mt-1">Manage and track your website monitors</p> */}
         </div>
         <Link href="/dashboard/monitors/new">
           <Button>

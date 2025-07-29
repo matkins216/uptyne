@@ -48,14 +48,14 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
       {monitors.map((monitor) => (
         <Card key={monitor.id}>
           <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <CardTitle className="text-lg">{monitor.name}</CardTitle>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <CardTitle className="text-lg break-words">{monitor.name}</CardTitle>
                 {monitor.last_check && (
                   <MonitorStatusBadge status={monitor.last_check.status} />
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 self-end sm:self-auto">
                 <Link href={`/dashboard/monitors/${monitor.id}`}>
                   <Button variant="ghost" size="icon">
                     <Activity className="h-4 w-4" />
@@ -79,10 +79,10 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+              <div className="col-span-1 sm:col-span-2 lg:col-span-1">
                 <p className="text-gray-500">URL</p>
-                <p className="font-medium truncate">{monitor.url}</p>
+                <p className="font-medium break-all">{monitor.url}</p>
               </div>
               <div>
                 <p className="text-gray-500">Uptime</p>

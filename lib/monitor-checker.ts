@@ -35,4 +35,3 @@ export async function checkWebsite(url: string): Promise<CheckResult> {
         }
     }
 }
-
