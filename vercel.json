@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/check-monitors",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/check-domains",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

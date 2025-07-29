@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MonitorStatusBadge } from '@/components/monitors/monitor-status-badge'
-import { Edit, Trash2, Activity } from 'lucide-react'
+import { Edit, Trash2, Activity, Shield, Globe, Calendar } from 'lucide-react'
 import { calculateUptime, formatResponseTime } from '@/lib/utils'
 
 interface Monitor {
@@ -22,6 +22,12 @@ interface Monitor {
     checked_at: string
   }
   uptime_percentage?: number
+  domain_check?: {
+    ssl_valid: boolean
+    ssl_expires_at?: string
+    dns_resolved: boolean
+    whois_expires_at?: string
+  }
 }
 
 interface MonitorListProps {
@@ -79,25 +85,66 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-              <div className="col-span-1 sm:col-span-2 lg:col-span-1">
-                <p className="text-gray-500">URL</p>
-                <p className="font-medium break-all">{monitor.url}</p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                <div className="col-span-1 sm:col-span-2 lg:col-span-1">
+                  <p className="text-gray-500">URL</p>
+                  <p className="font-medium break-all">{monitor.url}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Uptime</p>
+                  <p className="font-medium">
+                    {monitor.uptime_percentage !== undefined ? `${monitor.uptime_percentage}%` : 'No data'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Last Check</p>
+                  <p className="font-medium">
+                    {monitor.last_check
+                      ? formatDistanceToNow(new Date(monitor.last_check.checked_at), { addSuffix: true })
+                      : 'Never'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-gray-500">Uptime</p>
-                <p className="font-medium">
-                  {monitor.uptime_percentage !== undefined ? `${monitor.uptime_percentage}%` : 'No data'}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-500">Last Check</p>
-                <p className="font-medium">
-                  {monitor.last_check
-                    ? formatDistanceToNow(new Date(monitor.last_check.checked_at), { addSuffix: true })
-                    : 'Never'}
-                </p>
-              </div>
+              
+              {monitor.domain_check && (
+                <div className="border-t pt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Shield className={`h-4 w-4 ${monitor.domain_check.ssl_valid ? 'text-green-500' : 'text-red-500'}`} />
+                      <div>
+                        <p className="text-gray-500">SSL</p>
+                        <p className="font-medium">
+                          {monitor.domain_check.ssl_valid ? 'Valid' : 'Invalid'}
+                          {monitor.domain_check.ssl_expires_at && (
+                            <span className="text-xs text-gray-400 block">
+                              Expires {formatDistanceToNow(new Date(monitor.domain_check.ssl_expires_at), { addSuffix: true })}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Globe className={`h-4 w-4 ${monitor.domain_check.dns_resolved ? 'text-green-500' : 'text-red-500'}`} />
+                      <div>
+                        <p className="text-gray-500">DNS</p>
+                        <p className="font-medium">{monitor.domain_check.dns_resolved ? 'Resolved' : 'Failed'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-blue-500" />
+                      <div>
+                        <p className="text-gray-500">Domain</p>
+                        <p className="font-medium">
+                          {monitor.domain_check.whois_expires_at
+                            ? `Expires ${formatDistanceToNow(new Date(monitor.domain_check.whois_expires_at), { addSuffix: true })}`
+                            : 'No data'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

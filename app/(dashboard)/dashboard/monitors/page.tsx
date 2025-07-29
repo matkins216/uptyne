@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,15 @@ export default function MonitorsPage() {
   const [monitors, setMonitors] = useState<Monitor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleAddMonitor = () => {
+    if (monitors.length >= 5) {
+      router.push('/pricing');
+    } else {
+      router.push('/dashboard/monitors/new');
+    }
+  };
 
   useEffect(() => {
     fetchMonitors();
@@ -47,12 +57,15 @@ export default function MonitorsPage() {
       
       const data = await response.json();
       setMonitors(data);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
   const handleDelete = async (id: string) => {
     try {
@@ -102,11 +115,9 @@ export default function MonitorsPage() {
           <h1 className="text-2xl font-bold">Monitors</h1>
           {/* <p className="text-gray-600 mt-1">Manage and track your website monitors</p> */}
         </div>
-        <Link href="/dashboard/monitors/new">
-          <Button>
-            Add Monitor
-          </Button>
-        </Link>
+        <Button onClick={handleAddMonitor}>
+          {monitors.length >= 5 ? 'Upgrade to Add More' : 'Add Monitor'}
+        </Button>
       </div>
 
       <MonitorList monitors={monitors} onDelete={handleDelete} />

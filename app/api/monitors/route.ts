@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get monitors with their check results
+    // Get monitors with their check results and domain checks
     const { data: monitors, error } = await supabase
       .from('monitors')
       .select(`
@@ -30,6 +30,13 @@ export async function GET(request: Request) {
           status_code,
           error_message,
           checked_at
+        ),
+        domain_checks(
+          ssl_valid,
+          ssl_expires_at,
+          dns_resolved,
+          whois_expires_at,
+          checked_at
         )
       `)
       .eq('user_id', user.id)
@@ -40,11 +47,18 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Failed to fetch monitors' }, { status: 500 });
     }
 
-    // Process the data to include latest check and uptime for each monitor
+    // Process the data to include latest check, uptime, and domain check for each monitor
     const processedMonitors = monitors?.map(monitor => {
       const checks = monitor.monitor_checks || [];
       const latestCheck = checks.length > 0 
         ? checks.reduce((latest: any, check: any) => 
+            new Date(check.checked_at) > new Date(latest.checked_at) ? check : latest
+          )
+        : null;
+
+      const domainChecks = monitor.domain_checks || [];
+      const latestDomainCheck = domainChecks.length > 0
+        ? domainChecks.reduce((latest: any, check: any) => 
             new Date(check.checked_at) > new Date(latest.checked_at) ? check : latest
           )
         : null;
@@ -67,6 +81,12 @@ export async function GET(request: Request) {
           status_code: latestCheck.status_code,
           error_message: latestCheck.error_message,
           checked_at: latestCheck.checked_at
+        } : null,
+        domain_check: latestDomainCheck ? {
+          ssl_valid: latestDomainCheck.ssl_valid,
+          ssl_expires_at: latestDomainCheck.ssl_expires_at,
+          dns_resolved: latestDomainCheck.dns_resolved,
+          whois_expires_at: latestDomainCheck.whois_expires_at
         } : null
       };
     }) || [];
