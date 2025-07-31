@@ -28,14 +28,23 @@ interface Monitor {
   };
 }
 
+interface SubscriptionStatus {
+  subscription: any;
+  isBasicMember: boolean;
+  canAddMoreMonitors: boolean;
+}
+
 export default function MonitorsPage() {
   const [monitors, setMonitors] = useState<Monitor[]>([]);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleAddMonitor = () => {
-    if (monitors.length >= 5) {
+    const maxMonitors = subscriptionStatus?.canAddMoreMonitors ? 50 : 5;
+    
+    if (monitors.length >= maxMonitors) {
       router.push('/pricing');
     } else {
       router.push('/dashboard/monitors/new');
@@ -44,6 +53,7 @@ export default function MonitorsPage() {
 
   useEffect(() => {
     fetchMonitors();
+    fetchSubscriptionStatus();
   }, []);
 
   const fetchMonitors = async () => {
@@ -62,6 +72,19 @@ export default function MonitorsPage() {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSubscriptionStatus = async () => {
+    try {
+      const response = await fetch('/api/user/subscription');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSubscriptionStatus(data);
+      }
+    } catch (err) {
+      console.error('Error fetching subscription status:', err);
     }
   };
   
@@ -116,7 +139,7 @@ export default function MonitorsPage() {
           {/* <p className="text-gray-600 mt-1">Manage and track your website monitors</p> */}
         </div>
         <Button onClick={handleAddMonitor}>
-          {monitors.length >= 5 ? 'Upgrade to Add More' : 'Add Monitor'}
+          {monitors.length >= (subscriptionStatus?.canAddMoreMonitors ? 50 : 5) ? 'Upgrade to Add More' : 'Add Monitor'}
         </Button>
       </div>
 

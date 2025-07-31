@@ -1,3 +1,22 @@
+-- Profiles table to store user metadata including Stripe customer ID
+CREATE TABLE IF NOT EXISTS profiles (
+  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  stripe_customer_id text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- Enable Row Level Security for profiles
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- Policies for profiles
+CREATE POLICY "Users can view their own profile"
+  ON profiles FOR SELECT USING (id = auth.uid());
+CREATE POLICY "Users can update their own profile"
+  ON profiles FOR UPDATE USING (id = auth.uid());
+CREATE POLICY "Users can insert their own profile"
+  ON profiles FOR INSERT WITH CHECK (id = auth.uid());
+
 -- Monitors table
 CREATE TABLE IF NOT EXISTS monitors (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

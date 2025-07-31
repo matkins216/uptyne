@@ -10,6 +10,7 @@ const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700
 export const metadata: Metadata = {
   title: 'Uptime Monitor',
   description: 'Monitor your websites and get alerts when they go down',
+  
 }
 
 export default function RootLayout({
