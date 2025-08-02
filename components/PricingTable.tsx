@@ -38,7 +38,7 @@ const PricingTable = () => {
             <h2 className="text-3xl font-bold text-center mb-8">Pricing</h2>
             <stripe-pricing-table
                 pricing-table-id="prctbl_1RqznNGR7vUgYi5gQnlQ3CMd"
-                publishable-key="pk_test_51Rg7OWGR7vUgYi5gVCk4GTVYNyqCl8FuCKo0pIloxEZmfoc5CZ0PNZ2SnVRNuJ2esS7qPjn6ZAebqKk4MkG4cqih00MSa5BXAx"
+          publishable-key="pk_live_51Rg7OWGR7vUgYi5g1Xr7DKODcvf2csynWN6y4B2MdehvKt8LXkZ0HQuI7GwprFn7QalHRJuDQbkbz3lVzbyPF5hr00dK7fEERZ"
                 client-reference-id="124567"
                 className=''
             />
