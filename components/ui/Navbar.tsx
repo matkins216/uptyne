@@ -8,7 +8,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-      <div className="flex flex-row justify-between items-center w-full top-0">
+      <div className="flex flex-row justify-between items-center w-full top-0 shadow-2xl">
           <Image src="/logo.png" alt="logo" width={100} height={100} />
           
           {/* Desktop Menu */}

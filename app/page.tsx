@@ -5,6 +5,7 @@ import Navbar from "@/components/ui/Navbar";
 import Link from "next/link";
 import Script from "next/script";
 import "tailwindcss-motion";
+import Footer from "@/components/ui/Footer";
 
 
 export default function Home() {
@@ -12,13 +13,13 @@ export default function Home() {
     <>
     
       <Navbar />
-      <div className="flex flex-col items-center justify-center py-40 px-4">
+      <div className="flex flex-col items-center justify-center py-40 px-4 bg-gray-50">
         <div className="flex flex-col items-center justify-center gap-6 md:gap-10 max-w-md md:max-w-lg text-center">
           <h1 className="text-3xl md:text-6xl text-blue-500 font-extrabold motion-scale-in-[0.2] motion-translate-x-in-[-100%] motion-translate-y-in-[-1%] motion-rotate-in-[-130deg] motion-blur-in-[1px]">
-            Uptime Monitoring <span className="text-black underline italic">THAT SIMPLE</span>
+            Add Automated Monitoring to Your Retainers.
           </h1>
-          <p className="text-base md:text-lg text-gray-700">
-            Simple, reliable, and affordable uptime monitoring for freelance web designers and small agencies.
+          <p className="text-base md:text-xl text-gray-700">
+            Uptyne is the freelancer's secret tool for creating bulletproof client service packages.
           </p>
           <Link
             href="/register"
@@ -31,6 +32,7 @@ export default function Home() {
       <HomeAbout />
 
      <PricingTable />
+     <Footer />
     </>
   );
 }
