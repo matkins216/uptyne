@@ -15,6 +15,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get current monitor count
+    const { count: currentMonitorCount, error: countError } = await supabase
+      .from('monitors')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    if (countError) {
+      console.error('Error counting monitors:', countError);
+    }
+
     // Get user's Stripe customer ID from Supabase
     const { data: profile } = await supabase
       .from('profiles')
@@ -26,7 +36,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ 
         subscription: null, 
         isBasicMember: false,
-        canAddMoreMonitors: false 
+        canAddMoreMonitors: false,
+        maxMonitors: 5,
+        currentMonitorCount: currentMonitorCount || 0
       });
     }
 
@@ -38,12 +50,16 @@ export async function GET(request: NextRequest) {
     });
 
     const activeSubscription = subscriptions.data[0];
+
+    console.log('Active subscription:', activeSubscription);
     
     if (!activeSubscription) {
       return NextResponse.json({ 
         subscription: null, 
         isBasicMember: false,
-        canAddMoreMonitors: false 
+        canAddMoreMonitors: false,
+        maxMonitors: 5,
+        currentMonitorCount: currentMonitorCount || 0
       });
     }
 
@@ -54,6 +70,7 @@ export async function GET(request: NextRequest) {
 
     // Basic members can have more than 5 monitors
     const canAddMoreMonitors = isBasicMember;
+    const maxMonitors = isBasicMember ? 50 : 5;
 
     return NextResponse.json({
       subscription: {
@@ -66,6 +83,8 @@ export async function GET(request: NextRequest) {
       },
       isBasicMember,
       canAddMoreMonitors,
+      maxMonitors,
+      currentMonitorCount: currentMonitorCount || 0
     });
 
   } catch (error) {

@@ -18,6 +18,16 @@ async function checkSubscriptionStatus(userId: string) {
   try {
     const supabase = createRouteHandlerClient();
     
+    // Get current monitor count
+    const { count: currentMonitorCount, error: countError } = await supabase
+      .from('monitors')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+
+    if (countError) {
+      console.error('Error counting monitors:', countError);
+    }
+    
     // Get user's Stripe customer ID from Supabase
     const { data: profile } = await supabase
       .from('profiles')
@@ -29,7 +39,9 @@ async function checkSubscriptionStatus(userId: string) {
       return { 
         subscription: null, 
         isBasicMember: false,
-        canAddMoreMonitors: false 
+        canAddMoreMonitors: false,
+        maxMonitors: 5,
+        currentMonitorCount: currentMonitorCount || 0
       };
     }
 
@@ -46,7 +58,9 @@ async function checkSubscriptionStatus(userId: string) {
       return { 
         subscription: null, 
         isBasicMember: false,
-        canAddMoreMonitors: false 
+        canAddMoreMonitors: false,
+        maxMonitors: 5,
+        currentMonitorCount: currentMonitorCount || 0
       };
     }
 
@@ -57,6 +71,7 @@ async function checkSubscriptionStatus(userId: string) {
 
     // Basic members can have more than 5 monitors
     const canAddMoreMonitors = isBasicMember;
+    const maxMonitors = isBasicMember ? 50 : 5;
 
     return {
       subscription: {
@@ -69,13 +84,17 @@ async function checkSubscriptionStatus(userId: string) {
       },
       isBasicMember,
       canAddMoreMonitors,
+      maxMonitors,
+      currentMonitorCount: currentMonitorCount || 0
     };
   } catch (error) {
     console.error('Error checking subscription status:', error);
     return { 
       subscription: null, 
       isBasicMember: false,
-      canAddMoreMonitors: false 
+      canAddMoreMonitors: false,
+      maxMonitors: 5,
+      currentMonitorCount: 0
     };
   }
 }
@@ -211,23 +230,9 @@ export async function POST(request: Request) {
     // Check subscription status and current monitor count
     const subscriptionStatus = await checkSubscriptionStatus(user.id);
     
-    // Get current monitor count
-    const { count: currentMonitorCount, error: countError } = await supabase
-      .from('monitors')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id);
-
-    if (countError) {
-      console.error('Error counting monitors:', countError);
-      return NextResponse.json({ error: 'Failed to verify monitor limit' }, { status: 500 });
-    }
-
-    const maxMonitors = subscriptionStatus.canAddMoreMonitors ? 50 : 5;
-    const monitorCount = currentMonitorCount || 0;
-    
-    if (monitorCount >= maxMonitors) {
+    if (subscriptionStatus.currentMonitorCount >= subscriptionStatus.maxMonitors) {
       return NextResponse.json(
-        { error: `You have reached the maximum number of monitors (${maxMonitors}). Please upgrade your subscription to add more monitors.` },
+        { error: `You have reached the maximum number of monitors (${subscriptionStatus.maxMonitors}). Please upgrade your subscription to add more monitors.` },
         { status: 403 }
       );
     }

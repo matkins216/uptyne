@@ -12,6 +12,8 @@ interface SubscriptionStatus {
   subscription: any;
   isBasicMember: boolean;
   canAddMoreMonitors: boolean;
+  maxMonitors: number;
+  currentMonitorCount: number;
 }
 
 export default function NewMonitorPage() {
@@ -40,8 +42,11 @@ export default function NewMonitorPage() {
         const data = await response.json();
         setSubscriptionStatus(data);
         
-        // If user can't add more monitors, redirect to pricing
-        if (!data.canAddMoreMonitors) {
+        // Check if user has reached their monitor limit
+        const maxMonitors = data.maxMonitors || 5;
+        const currentCount = data.currentMonitorCount || 0;
+        
+        if (currentCount >= maxMonitors) {
           router.push('/pricing');
           return;
         }
@@ -60,10 +65,14 @@ export default function NewMonitorPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
     
     // Check subscription status before allowing submission
-    if (!subscriptionStatus?.canAddMoreMonitors) {
-      setError('You need to upgrade your subscription to add more monitors');
+    const maxMonitors = subscriptionStatus?.maxMonitors || 5;
+    const currentCount = subscriptionStatus?.currentMonitorCount || 0;
+    
+    if (currentCount >= maxMonitors) {
+      setError(`You have reached the maximum number of monitors (${maxMonitors}). Please upgrade your subscription to add more monitors.`);
       return;
     }
     

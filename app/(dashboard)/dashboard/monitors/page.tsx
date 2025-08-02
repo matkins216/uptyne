@@ -32,6 +32,8 @@ interface SubscriptionStatus {
   subscription: any;
   isBasicMember: boolean;
   canAddMoreMonitors: boolean;
+  maxMonitors: number;
+  currentMonitorCount: number;
 }
 
 export default function MonitorsPage() {
@@ -42,7 +44,7 @@ export default function MonitorsPage() {
   const router = useRouter();
 
   const handleAddMonitor = () => {
-    const maxMonitors = subscriptionStatus?.canAddMoreMonitors ? 50 : 5;
+    const maxMonitors = subscriptionStatus?.maxMonitors || 5;
     
     if (monitors.length >= maxMonitors) {
       router.push('/pricing');
@@ -140,7 +142,7 @@ export default function MonitorsPage() {
           {/* <p className="text-gray-600 mt-1">Manage and track your website monitors</p> */}
         </div>
         <Button onClick={handleAddMonitor}>
-          {monitors.length >= (subscriptionStatus?.canAddMoreMonitors ? 50 : 5) ? 'Upgrade to Add More' : 'Add Monitor'}
+          {monitors.length >= (subscriptionStatus?.maxMonitors || 5) ? 'Upgrade to Add More' : 'Add Monitor'}
         </Button>
       </div>
 
