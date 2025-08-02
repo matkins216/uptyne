@@ -82,6 +82,7 @@ export default function MonitorsPage() {
       if (response.ok) {
         const data = await response.json();
         setSubscriptionStatus(data);
+        console.log('Subscription status:', data);
       }
     } catch (err) {
       console.error('Error fetching subscription status:', err);

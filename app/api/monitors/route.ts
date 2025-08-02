@@ -1,11 +1,83 @@
 // app/api/monitors/route.ts
 import { createRouteHandlerClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-07-30.basil',
+});
 
 function calculateUptime(checks: any[]) {
   if (!checks || checks.length === 0) return 100;
   const upChecks = checks.filter(check => check.status === 'up').length;
   return Math.round((upChecks / checks.length) * 100);
+}
+
+// Helper function to check subscription status
+async function checkSubscriptionStatus(userId: string) {
+  try {
+    const supabase = createRouteHandlerClient();
+    
+    // Get user's Stripe customer ID from Supabase
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('stripe_customer_id')
+      .eq('id', userId)
+      .single();
+
+    if (!profile?.stripe_customer_id) {
+      return { 
+        subscription: null, 
+        isBasicMember: false,
+        canAddMoreMonitors: false 
+      };
+    }
+
+    // Get subscriptions from Stripe
+    const subscriptions = await stripe.subscriptions.list({
+      customer: profile.stripe_customer_id,
+      status: 'active',
+      expand: ['data.default_payment_method'],
+    });
+
+    const activeSubscription = subscriptions.data[0];
+    
+    if (!activeSubscription) {
+      return { 
+        subscription: null, 
+        isBasicMember: false,
+        canAddMoreMonitors: false 
+      };
+    }
+
+    // Check if it's a basic plan
+    const isBasicMember = activeSubscription.items.data.some(item => 
+      item.price.product === process.env.STRIPE_BASIC_PRODUCT_ID
+    );
+
+    // Basic members can have more than 5 monitors
+    const canAddMoreMonitors = isBasicMember;
+
+    return {
+      subscription: {
+        id: activeSubscription.id,
+        status: activeSubscription.status,
+        items: activeSubscription.items.data.map(item => ({
+          product: item.price.product,
+          quantity: item.quantity,
+        })),
+      },
+      isBasicMember,
+      canAddMoreMonitors,
+    };
+  } catch (error) {
+    console.error('Error checking subscription status:', error);
+    return { 
+      subscription: null, 
+      isBasicMember: false,
+      canAddMoreMonitors: false 
+    };
+  }
 }
 
 export async function GET(request: Request) {
@@ -133,6 +205,30 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: 'Interval must be between 1 and 60 minutes' },
         { status: 400 },
+      );
+    }
+
+    // Check subscription status and current monitor count
+    const subscriptionStatus = await checkSubscriptionStatus(user.id);
+    
+    // Get current monitor count
+    const { count: currentMonitorCount, error: countError } = await supabase
+      .from('monitors')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    if (countError) {
+      console.error('Error counting monitors:', countError);
+      return NextResponse.json({ error: 'Failed to verify monitor limit' }, { status: 500 });
+    }
+
+    const maxMonitors = subscriptionStatus.canAddMoreMonitors ? 50 : 5;
+    const monitorCount = currentMonitorCount || 0;
+    
+    if (monitorCount >= maxMonitors) {
+      return NextResponse.json(
+        { error: `You have reached the maximum number of monitors (${maxMonitors}). Please upgrade your subscription to add more monitors.` },
+        { status: 403 }
       );
     }
 

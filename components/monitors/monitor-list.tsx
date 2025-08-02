@@ -41,7 +41,7 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
       <Card>
         <CardContent className="text-center py-12">
           <p className="text-gray-500 mb-4">No monitors found</p>
-          <Link href="/monitors/new">
+          <Link href="/dashboard/monitors/new">
             <Button>Add Your First Monitor</Button>
           </Link>
         </CardContent>

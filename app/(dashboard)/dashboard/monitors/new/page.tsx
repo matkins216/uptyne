@@ -1,17 +1,25 @@
 // app/(dashboard)/dashboard/monitors/new/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+interface SubscriptionStatus {
+  subscription: any;
+  isBasicMember: boolean;
+  canAddMoreMonitors: boolean;
+}
+
 export default function NewMonitorPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -19,9 +27,45 @@ export default function NewMonitorPage() {
     interval: '5'
   });
 
+  useEffect(() => {
+    fetchSubscriptionStatus();
+  }, []);
+
+  const fetchSubscriptionStatus = async () => {
+    try {
+      setSubscriptionLoading(true);
+      const response = await fetch('/api/user/subscription');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSubscriptionStatus(data);
+        
+        // If user can't add more monitors, redirect to pricing
+        if (!data.canAddMoreMonitors) {
+          router.push('/pricing');
+          return;
+        }
+      } else {
+        console.error('Failed to fetch subscription status');
+        setError('Failed to verify subscription status');
+      }
+    } catch (err) {
+      console.error('Error fetching subscription status:', err);
+      setError('Failed to verify subscription status');
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    
+    // Check subscription status before allowing submission
+    if (!subscriptionStatus?.canAddMoreMonitors) {
+      setError('You need to upgrade your subscription to add more monitors');
+      return;
+    }
     
     // Validate form
     if (!formData.name.trim()) {
@@ -81,6 +125,32 @@ export default function NewMonitorPage() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  // Show loading state while checking subscription
+  if (subscriptionLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Verifying subscription...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if subscription check failed
+  if (error && !subscriptionStatus?.canAddMoreMonitors) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button onClick={() => router.push('/pricing')} variant="outline">
+            View Pricing
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto">
