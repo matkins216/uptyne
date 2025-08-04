@@ -23,6 +23,7 @@ export default function MobileNav() {
           <div className="flex flex-col p-4 space-y-2">
             <Link href="/dashboard" className="px-3 py-2 hover:bg-gray-100 rounded">Home</Link>
             <Link href="/dashboard/monitors" className="px-3 py-2 hover:bg-gray-100 rounded">Monitors</Link>
+            <Link href="/dashboard/settings" className="px-3 py-2 hover:bg-gray-100 rounded">Settings</Link>
             <Link href="/logout" className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600">Logout</Link>
           </div>
         </div>

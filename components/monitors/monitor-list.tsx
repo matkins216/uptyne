@@ -89,7 +89,7 @@ export function MonitorList({ monitors, onDelete }: MonitorListProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                 <div className="col-span-1 sm:col-span-2 lg:col-span-1">
                   <p className="text-gray-500">URL</p>
-                  <p className="font-medium break-all">{monitor.url}</p>
+                  <Link href={monitor.url} target="_blank" className="font-medium break-all">{monitor.url}</Link>
                 </div>
                 <div>
                   <p className="text-gray-500">Uptime</p>

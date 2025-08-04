@@ -43,7 +43,7 @@ export default function NewMonitorPage() {
         setSubscriptionStatus(data);
         
         // Check if user has reached their monitor limit
-        const maxMonitors = data.maxMonitors || 5;
+        const maxMonitors = data.maxMonitors || 3;
         const currentCount = data.currentMonitorCount || 0;
         
         if (currentCount >= maxMonitors) {
@@ -68,7 +68,7 @@ export default function NewMonitorPage() {
 
     
     // Check subscription status before allowing submission
-    const maxMonitors = subscriptionStatus?.maxMonitors || 5;
+    const maxMonitors = subscriptionStatus?.maxMonitors || 3;
     const currentCount = subscriptionStatus?.currentMonitorCount || 0;
     
     if (currentCount >= maxMonitors) {

@@ -15,7 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-autobg-gray-50">
       {/* Mobile top navigation */}
       <MobileNav />
       
@@ -32,6 +32,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
               </li>
               <li>
                 <Link href="/dashboard/monitors" className="block px-4 py-2 hover:bg-gray-100">Monitors</Link>
+              </li>
+              <li>
+                <Link href="/dashboard/settings" className="block px-4 py-2 hover:bg-gray-100">Settings</Link>
               </li>
             </ul>
           </nav>

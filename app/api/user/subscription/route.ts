@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
         subscription: null, 
         isBasicMember: false,
         canAddMoreMonitors: false,
-        maxMonitors: 5,
+        maxMonitors: 3,
         currentMonitorCount: currentMonitorCount || 0
       });
     }
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
         subscription: null, 
         isBasicMember: false,
         canAddMoreMonitors: false,
-        maxMonitors: 5,
+        maxMonitors: 3,
         currentMonitorCount: currentMonitorCount || 0
       });
     }
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 
     // Basic members can have more than 5 monitors
     const canAddMoreMonitors = isBasicMember;
-    const maxMonitors = isBasicMember ? 50 : 5;
+    const maxMonitors = isBasicMember ? 50 : 3;
 
     return NextResponse.json({
       subscription: {

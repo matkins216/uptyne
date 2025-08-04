@@ -2,6 +2,10 @@
 CREATE TABLE IF NOT EXISTS profiles (
   id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   stripe_customer_id text,
+  phone_number text,
+  slack_webhook_url text,
+  sms_alerts_enabled boolean DEFAULT false,
+  slack_alerts_enabled boolean DEFAULT false,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
