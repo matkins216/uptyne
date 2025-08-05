@@ -142,7 +142,7 @@ export default function MonitorsPage() {
           {/* <p className="text-gray-600 mt-1">Manage and track your website monitors</p> */}
         </div>
         <Button onClick={handleAddMonitor}>
-          {monitors.length >= (subscriptionStatus?.maxMonitors || 5) ? 'Upgrade to Add More' : 'Add Monitor'}
+          {monitors.length >= (subscriptionStatus?.maxMonitors || 3) ? 'Upgrade to Add More' : 'Add Monitor'}
         </Button>
       </div>
 
