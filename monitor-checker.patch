@@ -1,0 +1,167 @@
+diff --git a/lib/monitor-checker.ts b/lib/monitor-checker.ts
+index 0000000..1111111 100644
+--- a/lib/monitor-checker.ts
++++ b/lib/monitor-checker.ts
+@@ -1,49 +1,109 @@
+ // lib/monitor-checker.ts
+ 
+ import axios from 'axios'
+ 
+ export interface CheckResult {
+ 
+     status: 'up' | 'down' | 'error'
+ 
+     responseTime: number
+ 
+     statusCode?: number
+ 
+     errorMessage?: string
+ 
+ }
+ 
+ export async function checkWebsite(url: string): Promise<CheckResult> {
+ 
++    // Minimal change: support ping:// and tcp:// targets while keeping existing schema and callers.
++    // Example targets:
++    //   - ping://1.1.1.1
++    //   - tcp://8.8.8.8:443
++    // For http(s):// the existing logic below runs unchanged.
++    if (typeof url === 'string') {
++        if (url.startsWith('ping://')) {
++            const u = new URL(url)
++            const host = u.hostname || u.pathname.replace(/^\/+/, '')
++            return await checkPing(host, 5000)
++        }
++        if (url.startsWith('tcp://')) {
++            const u = new URL(url)
++            const host = u.hostname || u.pathname.replace(/^\/+/, '')
++            const port = u.port ? parseInt(u.port, 10) : 80
++            if (!host || Number.isNaN(port)) {
++                return { status: 'error', responseTime: 0, errorMessage: 'Invalid TCP URL: expected tcp://host:port' }
++            }
++            return await checkTcp(host, port, 5000)
++        }
++    }
++
+     const startTime = Date.now()
+ 
+     try {
+ 
+         const response = await axios.get(url, {
+ 
+             timeout: 30000,
+ 
+             validateStatus: () => true,
+ 
+             headers: {
+ 
+                 'User-Agent': 'UptimeMonitor/1.0'
+ 
+             }
+ 
+         })
+ 
+         const responseTime = Date.now() - startTime
+ 
+         return {
+ 
+             status: response.status >= 200 && response.status < 400 ? 'up' : 'down',
+ 
+             responseTime,
+ 
+             statusCode: response.status
+ 
+         }
+ 
+     } catch (error: any) {
+ 
+         return {
+ 
+             status: 'error',
+ 
+             responseTime: Date.now() - startTime,
+ 
+             errorMessage: error.message
+ 
+         }
+ 
+     }
+ 
+ }
++
++// --- Helpers for TCP and Ping (Node runtime required) ---
++async function checkTcp(host: string, port: number, timeoutMs: number): Promise<CheckResult> {
++    const net = await import('node:net')
++    const start = process.hrtime.bigint()
++    return new Promise<CheckResult>((resolve) => {
++        const socket = new net.Socket()
++        let settled = false
++        const finish = (status: 'up' | 'down' | 'error', errorMessage?: string) => {
++            if (settled) return
++            settled = true
++            try { socket.destroy() } catch {}
++            const end = process.hrtime.bigint()
++            const responseTime = Math.max(0, Math.round(Number(end - start) / 1_000_000))
++            resolve({ status, responseTime, errorMessage })
++        }
++        socket.setTimeout(timeoutMs)
++        socket.once('connect', () => finish('up'))
++        socket.once('timeout', () => finish('down', `TCP timeout after ${timeoutMs}ms`))
++        socket.once('error', (e: any) => finish('down', `TCP error: ${e?.message || String(e)}`))
++        socket.once('close', (hadErr) => { if (!settled && !hadErr) finish('down', 'TCP connection closed unexpectedly') })
++        try {
++            socket.connect(port, host)
++        } catch (e: any) {
++            finish('error', `TCP connect threw: ${e?.message || String(e)}`)
++        }
++    })
++}
++
++async function checkPing(host: string, timeoutMs: number): Promise<CheckResult> {
++    const cp = await import('node:child_process')
++    const isWin = process.platform === 'win32'
++    const pingBin = 'ping'
++    const args = isWin ? ['-n', '1', '-w', String(timeoutMs), host] : ['-n', '-c', '1', host]
++    const start = process.hrtime.bigint()
++    return new Promise<CheckResult>((resolve) => {
++        const finish = (status: 'up' | 'down' | 'error', errorMessage?: string, parsedRttMs?: number) => {
++            const end = process.hrtime.bigint()
++            const wallMs = Math.max(0, Math.round(Number(end - start) / 1_000_000))
++            resolve({ status, responseTime: parsedRttMs ?? wallMs, errorMessage })
++        }
++        try {
++            const child = cp.execFile(
++                pingBin,
++                args,
++                { timeout: timeoutMs, windowsHide: true, encoding: 'utf8', maxBuffer: 1024 * 1024 },
++                (err, stdout, stderr) => {
++                    if (err) {
++                        const code = (err as any)?.code
++                        if (code === 'ETIMEDOUT') return finish('down', `Ping timed out after ${timeoutMs}ms`)
++                        if (code === 'ENOENT') return finish('error', 'Ping binary not found on system')
++                        const rtt = parseRttMs(stdout) ?? parseRttMs(stderr)
++                        return finish('down', `Ping failed: ${err.message}`, rtt)
++                    }
++                    const rtt = parseRttMs(stdout)
++                    return finish('up', undefined, rtt)
++                }
++            )
++            const guard = setTimeout(() => { try { child.kill('SIGKILL') } catch {} }, timeoutMs + 500)
++            child.on('exit', () => clearTimeout(guard))
++            child.on('error', () => clearTimeout(guard))
++        } catch (e: any) {
++            return finish('error', `Failed to spawn ping: ${e?.message || String(e)}`)
++        }
++    })
++}
++
++function parseRttMs(output?: string): number | undefined {
++    if (!output) return undefined
++    const m1 = output.match(/time[=<]\s*(\d+(?:\.\d+)?)\s*ms/i)
++    if (m1) return Number(m1[1])
++    const m2 = output.match(/=\s*([\d.]+)\/([\d.]+)\/([\d.]+)\/([\d.]+)\s*ms/)
++    if (m2) return Number(m2[2])
++    const m3 = output.match(/Average\s*=\s*(\d+)\s*ms/i)
++    if (m3) return Number(m3[1])
++    return undefined
++}

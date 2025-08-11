@@ -27,7 +27,7 @@ export function HomeContent() {
               Real-Time Monitoring
             </h3>
             <p className="text-gray-600">
-              Continuous website monitoring with 99.9% uptime guarantee. Detect issues before they affect your users.
+              Continuous website monitoring to detect issues before they affect your users.
             </p>
           </div>
 
@@ -39,7 +39,7 @@ export function HomeContent() {
               Instant Alerts
             </h3>
             <p className="text-gray-600">
-              Get notified immediately via email, SMS, or webhook when your websites experience downtime.
+              Get notified immediately via SMS, or webhook when your websites experience downtime.
             </p>
           </div>
 
@@ -69,15 +69,12 @@ export function HomeContent() {
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-600">99.9% monitoring uptime guarantee</span>
+                  <span className="text-gray-600">Continuous monitoring</span>
                 </li>
+              
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-600">Global monitoring locations worldwide</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-600">Advanced SSL certificate monitoring</span>
+                  <span className="text-gray-600">SSL certificate monitoring</span>
                 </li>
               </ul>
             </div>
@@ -94,10 +91,7 @@ export function HomeContent() {
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-600">Port and ping monitoring</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-600">Keyword and content monitoring</span>
-                </li>
+                
               </ul>
             </div>
           </div>
@@ -179,7 +173,7 @@ export function HomeContent() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
-              href="/auth/register"
+              href="/register"
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Start Free Trial
