@@ -3,3 +3,84 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Blog Content Styling */
+.blog-content h1 {
+  @apply text-4xl font-bold text-gray-900 mb-8 mt-12 first:mt-0 tracking-tight;
+}
+
+.blog-content h2 {
+  @apply text-3xl font-bold text-gray-900 mb-6 mt-10 first:mt-0 tracking-tight;
+}
+
+.blog-content h3 {
+  @apply text-2xl font-semibold text-gray-900 mb-4 mt-8 first:mt-0;
+}
+
+.blog-content h4 {
+  @apply text-xl font-semibold text-gray-900 mb-3 mt-6 first:mt-0;
+}
+
+.blog-content p {
+  @apply text-lg text-gray-700 leading-relaxed mb-6;
+}
+
+.blog-content a {
+  @apply text-blue-600 font-medium no-underline hover:text-blue-700 hover:underline transition-colors;
+}
+
+.blog-content strong {
+  @apply text-gray-900 font-semibold;
+}
+
+.blog-content em {
+  @apply text-gray-800 italic;
+}
+
+.blog-content code {
+  @apply text-gray-800 bg-gray-100 px-2 py-1 rounded text-sm font-mono;
+}
+
+.blog-content pre {
+  @apply bg-gray-100 p-4 rounded-lg overflow-x-auto my-6;
+}
+
+.blog-content pre code {
+  @apply bg-transparent p-0;
+}
+
+.blog-content blockquote {
+  @apply border-l-4 border-blue-200 pl-6 italic text-gray-600 bg-blue-50 py-2 px-4 rounded-r-lg my-6;
+}
+
+.blog-content ul, .blog-content ol {
+  @apply my-6;
+}
+
+.blog-content li {
+  @apply text-gray-700 mb-2 leading-relaxed;
+}
+
+.blog-content hr {
+  @apply border-gray-200 my-8;
+}
+
+.blog-content table {
+  @apply w-full border-collapse my-6;
+}
+
+.blog-content th {
+  @apply border border-gray-300 bg-gray-50 px-4 py-2 text-left font-semibold text-gray-900;
+}
+
+.blog-content td {
+  @apply border border-gray-300 px-4 py-2 text-gray-700;
+}
+
+.blog-content img {
+  @apply rounded-lg shadow-md my-8 max-w-full h-auto;
+}
+
+.blog-content figcaption {
+  @apply text-center text-gray-500 text-sm mt-2;
+} 

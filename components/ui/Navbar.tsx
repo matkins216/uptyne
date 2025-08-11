@@ -16,6 +16,7 @@ const Navbar = () => {
               <a href="/" className="text-blue-500 hover:text-blue-700">Home</a>
               <a href="/login" className="text-blue-500 hover:text-blue-700">Login</a>
               <a href="/register" className="text-blue-500 hover:text-blue-700">Register</a>
+              <a href="/blog" className="text-blue-500 hover:text-blue-700">Blog</a>
           </div>
 
           {/* Hamburger Button */}
@@ -35,6 +36,7 @@ const Navbar = () => {
                 <a href="/" className="text-blue-500 hover:text-blue-700">Home</a>
                 <a href="/login" className="text-blue-500 hover:text-blue-700">Login</a>
                 <a href="/register" className="text-blue-500 hover:text-blue-700">Register</a>
+                <a href="/blog" className="text-blue-500 hover:text-blue-700">Blog</a>
               </div>
             </div>
           )}
