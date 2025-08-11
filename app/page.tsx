@@ -6,6 +6,7 @@ import Link from "next/link";
 import Script from "next/script";
 import "tailwindcss-motion";
 import Footer from "@/components/ui/Footer";
+import { HomeContent } from "@/components/HomeContent";
 
 
 export default function Home() {
@@ -30,6 +31,7 @@ export default function Home() {
         </div>
       </div>
       <HomeAbout />
+      <HomeContent />
 
      <PricingTable />
      <Footer />
