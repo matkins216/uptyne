@@ -6,7 +6,6 @@ author: "Uptyne Team"
 tags: ["uptime", "monitoring", "beginners", "website-health"]
 excerpt: "Discover why uptime monitoring is crucial for your business and learn how to get started with effective website monitoring strategies."
 featured: true
-image: "/images/blog/uptime-monitoring-guide.jpg"
 ---
 
 # Getting Started with Uptime Monitoring: A Complete Guide
