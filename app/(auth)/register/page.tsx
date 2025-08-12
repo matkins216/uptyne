@@ -11,9 +11,9 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const supabase = createClient();
 
   const handleRegister = async () => {
+    const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({ email, password });
     console.log('Register result:', { data, error });
     if (!error) {
@@ -26,6 +26,7 @@ export default function RegisterPage() {
 
   const handleGoogleRegister = async () => {
     console.log('handleGoogleRegister clicked');
+    const supabase = createClient();
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {

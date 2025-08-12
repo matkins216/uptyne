@@ -9,12 +9,10 @@ import { createClient } from "@/lib/supabase/client";
 import { loginWithPassword } from "@/app/(auth)/login/action"; // adjust path if needed
 
 export default function LoginPage() {
-  
   const router = useRouter();
-  const supabase = createClient();
-
 
   const handleGoogleLogin = async () => {
+    const supabase = createClient();
     // For production, use app.uptyne.com as the redirect domain
     const redirectDomain = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' 
       ? 'https://uptyne.com' 
