@@ -9,7 +9,8 @@
     "lint": "next lint",
     "check-monitors": "node scripts/check-monitors.js",
     "check-monitors-direct": "node scripts/check-monitors-direct.js",
-    "check-domains-direct": "node scripts/check-domains-direct.js"
+    "check-domains-direct": "node scripts/check-domains-direct.js",
+    "test-checker": "node scripts/test-monitor-checker.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
