@@ -31,7 +31,7 @@ export const GET = async () => {
     
     console.log(`Monitor ${monitor.id} (${monitor.name}): last domain check=${lastChecked?.toISOString() || 'never'}, should check=${shouldCheck}`);
     
-    if (shouldCheck) {
+    if (shouldCheck && monitor.url.startsWith('http')) {
       console.log(`Checking domain for ${monitor.url}...`);
       try {
         const domainResult = await checkDomain(monitor.url);
@@ -53,6 +53,8 @@ export const GET = async () => {
       } catch (error) {
         console.error(`Domain check failed for ${monitor.url}:`, error);
       }
+    } else if (shouldCheck) {
+      console.log(`Skipping domain check for non-HTTP URL: ${monitor.url}`);
     }
   }
   
